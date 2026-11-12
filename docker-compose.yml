@@ -27,11 +27,13 @@ x-airflow-common: &airflow-common
     GAZETTE_DATA_DIR: /opt/gazette/data
     GAZETTE_SOURCES_FILE: /opt/gazette/sources.csv
     GAZETTE_DATABASE_URL: postgresql://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/gazette
+    GAZETTE_RULES_FILE: /opt/gazette/config/regles.toml
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./data:/opt/gazette/data
     - ./sources.csv:/opt/gazette/sources.csv:ro
+    - ./config:/opt/gazette/config:ro
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on: &airflow-common-depends-on
     postgres:
@@ -44,6 +46,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-airflow}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
       POSTGRES_DB: airflow
+    # Exposé sur la machine (localhost seulement) pour `python -m gazette clean` hors Docker.
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d:ro
@@ -117,7 +122,7 @@ services:
     command:
       - -c
       - |
-        mkdir -p /opt/airflow/logs /opt/gazette/data/raw /opt/gazette/data/state
+        mkdir -p /opt/airflow/logs /opt/gazette/data/raw /opt/gazette/data/state /opt/gazette/data/quality /opt/gazette/data/archive
         chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow/logs /opt/gazette/data
         exec /entrypoint airflow version
     environment:

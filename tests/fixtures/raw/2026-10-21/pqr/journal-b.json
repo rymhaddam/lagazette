@@ -1,0 +1,37 @@
+{
+  "source": "Journal B",
+  "slug": "journal-b",
+  "type": "PQR",
+  "feed_url": "https://www.journal-b.fr/rss.xml",
+  "collection_date": "2026-10-21",
+  "fetches": [],
+  "items": [
+    {
+      "_attendu": "garde",
+      "id": "7505fd3a147dc9b84f7e61d33d30ddfd3178c7007f9e498119cac5c37f33e0e3",
+      "title": "Guerre en Ukraine : un militaire russe tué dans l’explosion d’une voiture à Saint-Pétersbourg",
+      "summary": "L'explosion s'est produite mardi matin dans le centre de la ville, selon les autorités russes.",
+      "link": "https://www.journal-b.fr/international/ukraine-militaire",
+      "published": "Tue, 21 Oct 2026 06:30:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "garde",
+      "id": "e0347ba04f8c31b9eff5a526cceb33c6c1026899830c9a19d1e10bd585f5c099",
+      "title": "A Toulouse, la liquidation judiciaire de l’usine de pâte à papier Fibre Excellence définitivement entérinée ; 300 salariés vont être licenciés",
+      "summary": "Le tribunal a confirmé la décision.",
+      "link": "https://www.journal-b.fr/economie/fibre-excellence",
+      "published": "Tue, 21 Oct 2026 05:30:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "garde",
+      "id": "a5b7e7431c04fca3fa2a308e4e6b178dc3d6977f341a68bdf70ed65db9884c91",
+      "title": "Fibre Excellence : l'usine de Saint-Gaudens placée en liquidation judiciaire par le tribunal de commerce",
+      "summary": "Un autre angle sur le même dossier.",
+      "link": "https://www.journal-b.fr/economie/saint-gaudens",
+      "published": "Tue, 21 Oct 2026 07:25:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    }
+  ]
+}

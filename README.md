@@ -1,8 +1,8 @@
 # La gazette
 
-Projet de data engineering (Master 2). Chaque matin, le pipeline collecte les flux RSS de la presse quotidienne régionale (PQR) et nationale (PQN) et stocke les articles bruts. Les étapes suivantes (nettoyage, regroupement par thèmes, édition à 7 h) viendront ensuite.
+Projet de data engineering (Master 2). Chaque matin, le pipeline collecte les flux RSS de la presse quotidienne régionale (PQR) et nationale (PQN), stocke les articles bruts, puis les **nettoie** et **contrôle leur qualité** avant de les stocker dans PostgreSQL. Les étapes suivantes (regroupement par thèmes, édition à 7 h) viendront ensuite.
 
-Ce dépôt contient **le socle, la collecte et le stockage brut**. Les modules `clean/`, `themes/` et `deliver/` sont vides pour l'instant.
+Ce dépôt contient **le socle, la collecte, le stockage brut (TD 1 à 3), le nettoyage et les contrôles qualité (TD 4)**. Les modules `themes/` et `deliver/` sont vides pour l'instant. Les règles, les contrôles, la rétention et le journal des ajustements sont décrits dans [`docs/qualite.md`](docs/qualite.md).
 
 ## Ce qu'on collecte, et ce qu'on ne collecte pas
 
@@ -57,7 +57,10 @@ Le DAG contient :
 - `collection_date` : la date du jour de collecte (heure de Paris) ;
 - `list_sources` : les sources actives de `sources.csv` ;
 - `collect` : **une tâche par source** (dynamic task mapping) avec 2 relances. Un refus du `robots.txt` ou une erreur 404 échoue tout de suite, sans relance ;
-- `write_manifest` : écrit `_manifest.json`, **même si des sources ont échoué** (`trigger_rule="all_done"`).
+- `write_manifest` : écrit `_manifest.json`, **même si des sources ont échoué** (`trigger_rule="all_done"`) ;
+- `clean` : nettoie le brut du jour, alimente `articles_propres` et `articles_rejetes`, puis écrit le rapport de qualité ;
+- `quality_checks` : vérifie des faits sur les données du jour, publie les métriques (table `metriques_qualite` et XCom), puis envoie une alerte Discord si un fait est faux ;
+- `retention` : archive en stockage froid les données de plus de 30 jours et supprime le brut de plus de 90 jours.
 
 Le run du DAG reste « success » quand une source échoue. Les échecs sont visibles sur la tâche mappée concernée et dans le manifeste.
 
@@ -75,6 +78,30 @@ python -m gazette collect --source le-monde --source l-obs
 ```
 
 La commande résume chaque source. Elle renvoie le code 0 si au moins une source a réussi, et 1 si toutes ont échoué. Avec `--strict`, elle renvoie 1 dès qu'une source échoue.
+
+## Nettoyer et contrôler sans Airflow
+
+PostgreSQL doit tourner (`docker compose up -d postgres`). Il est publié sur `127.0.0.1:5432`.
+
+```bash
+make clean-data                       # = python -m gazette clean (nettoyage + stockage + rapport)
+make check                            # = python -m gazette check (contrôles + alerte)
+python -m gazette clean --date 2026-11-12 --sans-base   # sans PostgreSQL : rapport et contrôles en mémoire
+python -m gazette check --seuil taux_rejet_max_par_source=0.5   # seuil remplacé pour ce passage
+make retention                        # simulation ; make retention APPLY=1 pour appliquer
+```
+
+Le rapport du jour est dans `data/quality/<AAAA-MM-JJ>/rapport.md`. Les règles et les seuils sont dans [`config/regles.toml`](config/regles.toml). Pour les alertes, renseignez `GAZETTE_ALERT_WEBHOOK` (webhook Discord) dans `.env`.
+
+```
+data/quality/<AAAA-MM-JJ>/rapport.{md,json}   rapport de qualité de chaque passage
+data/archive/{raw,quality}/<jour>.tar.gz      stockage froid (rétention)
+PostgreSQL, base gazette :
+  articles_propres    articles publiables : titre, extrait court, lien, date (UTC), source
+  articles_rejetes    items écartés : règle (R01_publi…) et raison
+  metriques_qualite   une ligne par contrôle et par passage
+  rapports_qualite    le rapport complet de chaque passage (JSONB)
+```
 
 ## Stockage brut
 
@@ -104,7 +131,9 @@ Les sources sont décrites dans `sources.csv` (UTF-8, séparateur `;`). Ses colo
 
 ```bash
 make lint      # ruff check + ruff format --check
-make test      # pytest, sans aucun appel réseau (fixtures RSS + httpx.MockTransport)
+make test      # pytest, sans aucun appel réseau (fixtures RSS, brut pollué, httpx.MockTransport)
+# Tests de stockage PostgreSQL (sautés sans cette variable ; la base est créée si besoin) :
+GAZETTE_TEST_DATABASE_URL=postgresql://airflow:airflow@127.0.0.1:5432/gazette_test make test
 docker compose config --quiet
 ```
 
@@ -115,7 +144,7 @@ python -c "import json,glob; [print(f, len(d['items']), len({i['id'] for i in d[
 ```
 
 La CI GitHub Actions (`.github/workflows/ci.yml`) enchaîne trois contrôles :
-1. ruff, puis pytest sous Python 3.12 ;
+1. ruff, puis pytest sous Python 3.12, avec un service PostgreSQL pour les tests de stockage ;
 2. `docker compose config`, puis la construction de l'image ;
 3. un contrôle du DAG dans l'image (`tests/check_dag.py`).
 
@@ -126,9 +155,13 @@ dags/gazette_daily.py        DAG Airflow (aucune logique métier)
 src/gazette/config.py        réglages lus depuis l'environnement / .env
 src/gazette/sources.py       lecture et validation de sources.csv
 src/gazette/collect/         fetcher.py (HTTP poli), parser.py (feedparser → Item), runner.py
-src/gazette/storage/         raw.py (stockage par jour, manifeste), atomic.py
-src/gazette/cli.py           python -m gazette collect
-src/gazette/{clean,themes,deliver}/   étapes suivantes (vides)
-db/init/01-init.sql          base gazette + extension vector
-tests/                       pytest + fixtures RSS locales
+src/gazette/clean/           normalize.py (fonctions pures), rules.py, dedup.py, pipeline.py, models.py
+src/gazette/quality/         report.py (rapport), checks.py (contrôles), alert.py (Discord), runner.py
+src/gazette/storage/         raw.py (stockage par jour, manifeste), atomic.py, db.py (PostgreSQL), retention.py
+src/gazette/cli.py           python -m gazette collect | clean | check | retention
+src/gazette/{themes,deliver}/   étapes suivantes (vides)
+config/regles.toml           règles d'exclusion et seuils des contrôles
+db/init/                     base gazette + extension vector, tables du TD 4
+docs/qualite.md              pollueurs, règles, contrôles, rétention, journal des ajustements
+tests/                       pytest + fixtures RSS locales + brut pollué (tests/fixtures/raw)
 ```

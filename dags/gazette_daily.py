@@ -1,4 +1,5 @@
-"""DAG quotidien de La gazette : collecte des flux RSS à 5 h (heure de Paris).
+"""DAG quotidien de La gazette : collecte des flux RSS à 5 h (heure de Paris), puis
+nettoyage, contrôles qualité et rétention (TD 4).
 
 Aucune logique métier ici : le DAG appelle les fonctions du paquet `gazette`,
 qui fonctionnent aussi sans Airflow (`python -m gazette collect`).
@@ -18,13 +19,13 @@ PARIS = pendulum.timezone("Europe/Paris")
 
 @dag(
     dag_id="gazette_daily",
-    description="Collecte quotidienne des flux RSS PQR/PQN et stockage brut",
+    description="Collecte RSS PQR/PQN, stockage brut, nettoyage et contrôles qualité",
     schedule=CronTriggerTimetable("0 5 * * *", timezone=PARIS),
     start_date=pendulum.datetime(2026, 10, 1, tz=PARIS),
     catchup=False,
     max_active_runs=1,
     default_args={"owner": "la-gazette"},
-    tags=["gazette", "collecte"],
+    tags=["gazette", "collecte", "qualite"],
 )
 def gazette_daily():
     @task
@@ -72,9 +73,46 @@ def gazette_daily():
 
         return finalize(load_settings(), date.fromisoformat(day))["summary"]
 
+    @task
+    def clean(day: str) -> dict:
+        """Brut du jour -> articles_propres / articles_rejetes + rapport de qualité."""
+        from gazette.config import load_settings
+        from gazette.quality.runner import run_clean
+
+        report, _ = run_clean(load_settings(), date.fromisoformat(day))
+        # Résumé en XCom : visible dans l'interface Airflow à chaque passage.
+        return {
+            "entrees": report["entrees"],
+            "gardes": report["gardes"],
+            "rejetes": report["rejetes"],
+            "par_regle": {k: v["nombre"] for k, v in report["par_regle"].items()},
+            "stockage": report["stockage"],
+        }
+
+    @task
+    def quality_checks(day: str) -> dict:
+        """Faits vérifiés sur les données réelles ; métriques en base ; alerte Discord si
+        un fait est faux. La tâche réussit quand même : l'alerte est le signal, et la
+        publication du jour n'est pas bloquée par un seuil."""
+        from gazette.config import load_settings
+        from gazette.quality.runner import run_quality_checks
+
+        return run_quality_checks(load_settings(), date.fromisoformat(day))
+
+    @task(trigger_rule="all_done")
+    def retention() -> int:
+        """Archive en stockage froid ce qui a plus de 30 jours, supprime le brut de 90 jours."""
+        from gazette.config import load_settings
+        from gazette.storage import retention as policy
+
+        settings = load_settings()
+        return len(policy.apply(settings, settings.today()))
+
     day = collection_date()
     collected = collect.partial(day=day).expand(slug=list_sources())
-    collected >> write_manifest(day)
+    manifest = write_manifest(day)
+    collected >> manifest
+    manifest >> clean(day) >> quality_checks(day) >> retention()
 
 
 gazette_daily()

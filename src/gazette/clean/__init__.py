@@ -1,1 +1,1 @@
-"""Nettoyage des items bruts (étape suivante, non implémentée)."""
+"""Nettoyage des items bruts : normalisation, règles d'exclusion, dédoublonnage."""

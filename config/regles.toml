@@ -1,0 +1,133 @@
+# La gazette — règles de nettoyage et seuils des contrôles qualité (TD 4).
+#
+# Toutes les règles sont ici, lisibles et modifiables sans toucher au code.
+# Chaque règle porte un identifiant stable (R01_publi…) : le rapport de qualité compte par
+# identifiant. Un item est écarté par la PREMIÈRE règle qui le vise, dans l'ordre :
+#   1. structure : R13_lien_invalide, R05_titre_vide, R07_encodage_casse, R12_date_absente,
+#                  R06_date_future, R11_trop_ancien
+#   2. contenu   : R01_publi, R02_horoscope, R03_programme_tv, R04_jeux_concours
+#   3. doublons  : R08_doublon_exact, R10_depeche_reprise, R09_doublon_approx
+# Toute modification se note dans docs/qualite.md (journal des ajustements).
+
+[normalisation]
+# Longueur maximale de l'extrait conservé (droit de citation : extrait court).
+extrait_max = 300
+# Fuseau appliqué aux dates sans fuseau.
+fuseau_par_defaut = "Europe/Paris"
+# Préfixes éditoriaux retirés du titre AVANT comparaison (le titre affiché reste intact).
+# Un préfixe tout en majuscules suivi de « . », « : » ou « | » est aussi retiré.
+prefixes_titre = [
+    "direct", "en direct", "live", "video", "replay", "photos", "carte", "temoignage",
+    "entretien", "reportage", "decryptage", "recit", "edito", "sondage", "info",
+    "meteo", "societe", "sport", "economie", "politique", "faits divers", "quiz",
+]
+# Mots ignorés dans le calcul de Jaccard (déjà sans accents, en minuscules).
+mots_vides = [
+    "le", "la", "les", "un", "une", "des", "de", "du", "d", "l", "et", "ou", "a", "au", "aux",
+    "en", "dans", "sur", "pour", "par", "avec", "sans", "ce", "ces", "cette", "qui", "que",
+    "qu", "est", "sont", "se", "sa", "son", "ses", "il", "elle", "ils", "elles", "on", "ne",
+    "pas", "plus", "s", "y", "apres", "selon",
+]
+
+# ---------------------------------------------------------------------------
+# 1. Structure
+# ---------------------------------------------------------------------------
+[regles.R13_lien_invalide]
+description = "Lien absent ou non HTTP(S), même après réparation du doublement d'hôte."
+
+[regles.R05_titre_vide]
+description = "Titre vide ou trop court pour être un titre d'article."
+longueur_min = 15
+
+[regles.R07_encodage_casse]
+description = "Encodage cassé (Ã©, â€™, �) que la normalisation n'a pas su réparer."
+
+[regles.R12_date_absente]
+description = "Date de publication absente ou illisible : impossible de dater l'article."
+
+[regles.R06_date_future]
+description = "Date de publication dans le futur (au-delà d'une tolérance d'horloge)."
+tolerance_minutes = 60
+
+[regles.R11_trop_ancien]
+description = "Article publié trop longtemps avant le passage : ce n'est plus de l'actualité."
+age_max_heures = 72
+
+# ---------------------------------------------------------------------------
+# 2. Contenu : rubriques (segments de l'URL) et motifs (regex sur titre + extrait,
+#    insensibles à la casse).
+# ---------------------------------------------------------------------------
+[regles.R01_publi]
+description = "Publi-reportages, contenus partenaires, bons plans et codes promo (affiliation)."
+rubriques = [
+    "bons-plans", "bon-plan", "partenaires", "partenaire", "contenu-partenaire",
+    "publi-redactionnel", "sponsorise", "shopping", "codes-promo", "guide-d-achat",
+]
+motifs = [
+    'contenus? (sponsoris|partenaire)',
+    'publi[- ]?(reportage|r[ée]dactionnel|communiqu)',
+    '\bbons? plans?\b',
+    '\bcodes? promo',
+    'remises? (imm[ée]diate|jusqu)',
+    'jusqu.{1,3}[àa] -?\d{2} ?%',
+    'en partenariat avec',
+]
+
+[regles.R02_horoscope]
+description = "Horoscope et astrologie."
+rubriques = ["horoscope", "horoscopes", "astrologie", "astro"]
+motifs = [
+    '\bhoroscope',
+    '\bastrolog',
+    '\b(b[ée]lier|taureau|g[ée]meaux|cancer|lion|vierge|balance|scorpion|sagittaire|capricorne|verseau|poissons)\b.{0,40}\b(amour|travail|sant[ée]|chance)\b',
+]
+
+[regles.R03_programme_tv]
+description = "Programmes et critiques TV (« ce soir à la télé »), rubriques télé."
+rubriques = ["programme-tv", "programmes-tv", "programme-tele", "tele", "teleobs", "tv-programme"]
+motifs = [
+    'programmes? t[ée]l[ée]',
+    'programmes? tv',
+    'ce soir (à|a|sur) (la t[ée]l[ée]|tf1|france ?[2-5]|m6|arte|canal)',
+    'que regarder (ce soir|à la t)',
+]
+
+[regles.R04_jeux_concours]
+description = "Jeux, quiz, concours et grilles (mots croisés, sudoku)."
+rubriques = ["jeux", "les-jeux-de-l-obs", "jeux-concours", "concours", "quiz", "mots-croises", "sudoku"]
+motifs = [
+    '^quiz\b',
+    'jeux?[- ]concours',
+    'tentez de gagner',
+    'mots[- ](crois|fl[ée]ch)',
+    '\bsudoku\b',
+    'espace jeux',
+]
+
+# ---------------------------------------------------------------------------
+# 3. Doublons (appliqués aux items qui ont passé les règles précédentes, du plus ancien
+#    au plus récent : on garde la première publication).
+# ---------------------------------------------------------------------------
+[regles.R08_doublon_exact]
+description = "Même lien canonique ou même titre normalisé qu'un article déjà gardé de la même source."
+
+[regles.R10_depeche_reprise]
+description = "Dépêche reprise à l'identique par une autre source : même titre normalisé ou même extrait."
+extrait_min = 60  # un extrait identique ne compte que s'il est assez long pour être signifiant
+
+[regles.R09_doublon_approx]
+description = "Titre quasi identique (« à deux mots près ») à un article déjà gardé : Jaccard sur les mots."
+# 0,80 et non 0,75 : à 0,75, deux articles distincts sur Fibre Excellence (Libération /
+# La Dépêche, 2026-11-12) étaient fusionnés ; à 0,80 seule la dépêche AFP reprise par
+# Le Monde et Sud Ouest (deux mots d'écart) est écartée.
+seuil_jaccard = 0.80
+mots_min = 4  # en dessous, deux titres courts se ressemblent trop facilement
+
+# ---------------------------------------------------------------------------
+# Contrôles qualité (après chaque passage, sur les données réelles de articles_propres)
+# ---------------------------------------------------------------------------
+[controles]
+taux_rejet_max_par_source = 0.80
+articles_min = 30            # en dessous, la collecte ou le nettoyage a un problème
+sources_min = 4              # nombre minimal de sources représentées dans le propre
+tolerance_future_minutes = 60

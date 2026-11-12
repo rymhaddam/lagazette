@@ -30,6 +30,10 @@ class Settings(BaseModel):
     # Nombre total d'essais par requête (1 essai + 2 relances au plus).
     max_attempts: int = Field(3, ge=1, le=3)
     database_url: str | None = None
+    # Règles de nettoyage et seuils des contrôles qualité (TD 4).
+    rules_file: Path = Path("config/regles.toml")
+    # Webhook Discord des alertes qualité ; vide = alerte dans les journaux seulement.
+    alert_webhook: str = ""
 
     @property
     def raw_dir(self) -> Path:
@@ -38,6 +42,16 @@ class Settings(BaseModel):
     @property
     def state_dir(self) -> Path:
         return self.data_dir / "state"
+
+    @property
+    def quality_dir(self) -> Path:
+        """Rapports de qualité : data/quality/<AAAA-MM-JJ>/rapport.{json,md}."""
+        return self.data_dir / "quality"
+
+    @property
+    def archive_dir(self) -> Path:
+        """Stockage froid (rétention) : data/archive/."""
+        return self.data_dir / "archive"
 
     @property
     def tz(self) -> ZoneInfo:
@@ -70,6 +84,8 @@ _ENV_MAP = {
     "GAZETTE_DOMAIN_DELAY": "domain_delay",
     "GAZETTE_MAX_ATTEMPTS": "max_attempts",
     "GAZETTE_DATABASE_URL": "database_url",
+    "GAZETTE_RULES_FILE": "rules_file",
+    "GAZETTE_ALERT_WEBHOOK": "alert_webhook",
 }
 
 

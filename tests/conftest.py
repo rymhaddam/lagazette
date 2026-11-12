@@ -14,6 +14,8 @@ from gazette.collect.fetcher import PoliteFetcher
 from gazette.config import Settings
 
 FIXTURES = Path(__file__).parent / "fixtures"
+# Les tests du nettoyage utilisent les vraies règles du dépôt.
+RULES_FILE = Path(__file__).parent.parent / "config" / "regles.toml"
 DAY = date(2026, 10, 21)
 
 Route = httpx.Response | Callable[[httpx.Request], httpx.Response]

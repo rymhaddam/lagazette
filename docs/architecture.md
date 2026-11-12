@@ -5,6 +5,13 @@
 > source et par jour** (`data/raw/<date>/<pqr|pqn>/<slug>.json`) avec un `_manifest.json`, et non du
 > JSON Lines. PostgreSQL 16 + pgvector héberge la base `airflow` et la base `gazette`. Il y a
 > **8 sources** (4 PQR, 4 PQN). Le reste du document décrit la cible des étapes suivantes.
+>
+> **Mise à jour (2026-11-12) — TD 4.** Le nettoyage lit le brut (sans jamais le modifier) et
+> alimente les tables `articles_propres` et `articles_rejetes` de la base `gazette`. Le rapport
+> de qualité est écrit dans `data/quality/<jour>/` et dans la table `rapports_qualite`. Les
+> contrôles publient leurs chiffres dans `metriques_qualite` et alertent sur Discord. Les tâches
+> `clean`, `quality_checks` et `retention` suivent `write_manifest` dans le DAG. Détails :
+> [`qualite.md`](qualite.md).
 
 Pipeline quotidien : les flux RSS de la presse sont collectés à 5 h, regroupés par thèmes, puis l'édition est publiée à 7 h. Tout tourne en local sous Docker Compose et Prefect orchestre les étapes.
 

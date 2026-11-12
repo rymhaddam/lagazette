@@ -1,0 +1,163 @@
+{
+  "source": "Journal A",
+  "slug": "journal-a",
+  "type": "PQN",
+  "feed_url": "https://www.journal-a.fr/rss.xml",
+  "collection_date": "2026-10-21",
+  "fetches": [],
+  "items": [
+    {
+      "_attendu": "garde",
+      "id": "c43fb91f48f83bae4b9818923154f836510a7feda0e71c7ea255438b66c4f54f",
+      "title": "Budget 2027 : le Sénat adopte la première partie du projet de loi de finances",
+      "summary": "<p>Les sénateurs ont voté <b>mardi</b> la partie recettes&nbsp;du budget, après trois jours de débats.</p>",
+      "link": "https://www.journal-a.fr/politique/budget-2027-senat-adopte?utm_source=rss",
+      "published": "Tue, 21 Oct 2026 06:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "garde",
+      "id": "5a7a737e85be944ba4db5fc17f17cc07d56a5c7bc35a03bb05d84e0ea2877448",
+      "title": "Ã‰tÃ© indien : records de chaleur battus dans le Sud-Ouest pour un mois d'octobre",
+      "summary": "Les tempÃ©ratures ont dÃ©passÃ© 30 Â°C Ã  Bordeaux, du jamais-vu Ã  cette saison.",
+      "link": "https://www.journal-a.fr/meteo/ete-indien-records",
+      "published": "Tue, 21 Oct 2026 05:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "garde",
+      "id": "0fc85b5f97e8be386a88f4814c9f80558b36f5222b35b76eb1f191df51be3c43",
+      "title": "Vidéo : la nouvelle ligne de tramway inaugurée à Montpellier ce week-end",
+      "summary": "Les premières rames ont circulé samedi.",
+      "link": "https://www.journal-a.frhttps://www.journal-a.fr/videos/tramway-montpellier",
+      "published": "2026-10-21T04:00:00Z",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R13_lien_invalide",
+      "id": "ad131d92c859c899429835f6ed79cbee0df35dac6fede8ba4a0fb2b78477b2f5",
+      "title": "Un lien qui ne mène nulle part dans ce flux mal formé",
+      "summary": "",
+      "link": "javascript:void(0)",
+      "published": "Tue, 21 Oct 2026 06:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R05_titre_vide",
+      "id": "bf8007dca8a082624b60a5d8e6844292895505745fde887d33f079b390a68b71",
+      "title": "   ",
+      "summary": "Un extrait sans titre.",
+      "link": "https://www.journal-a.fr/societe/sans-titre",
+      "published": "Tue, 21 Oct 2026 06:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R07_encodage_casse",
+      "id": "d3ddb1ddd3c7e793cc7dfcdbf205b4b77b11858309e16284efedac0af7dedfdd",
+      "title": "Grève : le trafic perturbé ï¿½ la SNCF, ce mardi � Paris",
+      "summary": "Pr�visions de trafic.",
+      "link": "https://www.journal-a.fr/societe/greve-sncf",
+      "published": "Tue, 21 Oct 2026 06:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R12_date_absente",
+      "id": "b0435ac35cb69080359f4359638171ad4cd4e307ec92845828bc94de41767866",
+      "title": "Un article dont la date de publication a disparu du flux",
+      "summary": "Extrait.",
+      "link": "https://www.journal-a.fr/societe/sans-date",
+      "published": null,
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R06_date_future",
+      "id": "192017cfde15fb87d187bcce62d8c7f27e97ca91e525155b40fc2db11377d702",
+      "title": "Résultats du second tour publiés avant même le vote, une erreur de flux",
+      "summary": "Extrait.",
+      "link": "https://www.journal-a.fr/politique/futur",
+      "published": "Sat, 21 Nov 2026 06:00:00 +0100",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R11_trop_ancien",
+      "id": "dbe36648dbe83e9d5c997c615c5b0057a9feda7667c430e037d32079e2ceafb6",
+      "title": "Immobilier en Corse : les prix s'envolent sur tout le littoral",
+      "summary": "Extrait.",
+      "link": "https://www.journal-a.fr/immobilier/corse",
+      "published": "Thu, 08 Oct 2026 10:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R01_publi",
+      "id": "3088bcf76907290385de9403aaaa7e5e29af9e3d3eec2585a3f793be66625854",
+      "title": "Black Friday : grosses promotions sur les aspirateurs robots",
+      "summary": "Jusqu'à -55 % de remise immédiate.",
+      "link": "https://www.journal-a.fr/bons-plans/maison/aspirateurs",
+      "published": "Tue, 21 Oct 2026 07:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R01_publi",
+      "id": "4f3a834fdf414342cec867413e61845380a5cb91f2194718b2bc7df6b3bc1bb6",
+      "title": "Une marque de cosmétiques dévoile sa nouvelle gamme bio pour l'hiver",
+      "summary": "Contenu sponsorisé proposé par notre partenaire.",
+      "link": "https://www.journal-a.fr/beaute/gamme-bio",
+      "published": "Tue, 21 Oct 2026 07:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R02_horoscope",
+      "id": "7db088656e013d61eb6d5459b1a3be5107291c945d157640286188f0828de622",
+      "title": "Horoscope du mardi 21 octobre 2026 : ce que vous réservent les astres",
+      "summary": "Bélier : belle journée pour l'amour.",
+      "link": "https://www.journal-a.fr/astro/horoscope-21-octobre",
+      "published": "Tue, 21 Oct 2026 06:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R03_programme_tv",
+      "id": "c38e49fb3abf6b429ce7768cf8127231f545ecbe565724c3cd31d36b85d36b47",
+      "title": "Que regarder ce soir à la télé ? Notre sélection du mardi",
+      "summary": "Films et séries.",
+      "link": "https://www.journal-a.fr/culture/ce-soir-tele",
+      "published": "Tue, 21 Oct 2026 06:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R04_jeux_concours",
+      "id": "b7405545ea8320db173527ffeba5f625ca88a1c6a412bc1e84870f72df20ff33",
+      "title": "Quiz. 12 questions sur Charles de Gaulle pour tester votre culture",
+      "summary": "Testez-vous.",
+      "link": "https://www.journal-a.fr/culture/quiz-de-gaulle",
+      "published": "Tue, 21 Oct 2026 06:00:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R08_doublon_exact",
+      "id": "3979fc2212e0192f28add5cad5c21c9fbdac3702a5f4ba631f4293e0785eae4c",
+      "title": "Budget 2027 : le Sénat adopte la première partie du projet de loi de finances !",
+      "summary": "Mise à jour de l'article.",
+      "link": "https://www.journal-a.fr/politique/budget-2027-senat-adopte-maj",
+      "published": "Tue, 21 Oct 2026 07:45:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R10_depeche_reprise",
+      "id": "acade467ead6b4ee43f74aab49b9d2c5fc1e2c77fff906f22f6509f932996bd2",
+      "title": "DIRECT. Guerre en Ukraine : un militaire russe tué dans l'explosion d'une voiture à Saint-Pétersbourg",
+      "summary": "Suivez notre direct.",
+      "link": "https://www.journal-a.fr/international/direct-ukraine",
+      "published": "Tue, 21 Oct 2026 07:10:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    },
+    {
+      "_attendu": "R09_doublon_approx",
+      "id": "105259d35e457036507e2f1055668b43aff5df644ec0d6187dd7faabbab18d77",
+      "title": "À Toulouse, la liquidation judiciaire de Fibre Excellence définitivement entérinée, les 300 salariés vont être licenciés",
+      "summary": "Trois cents emplois supprimés.",
+      "link": "https://www.journal-a.fr/economie/toulouse-fibre",
+      "published": "Tue, 21 Oct 2026 07:20:00 +0200",
+      "fetched_at": "2026-10-21T07:30:00+02:00"
+    }
+  ]
+}

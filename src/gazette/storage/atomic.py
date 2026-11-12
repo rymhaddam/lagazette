@@ -12,6 +12,23 @@ from pathlib import Path
 from typing import Any
 
 
+def atomic_write_text(path: str | Path, text: str) -> None:
+    """Comme `atomic_write_json`, pour un fichier texte (rapport Markdown)."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(text)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(tmp_name, path)
+    except BaseException:
+        with contextlib.suppress(FileNotFoundError):
+            os.unlink(tmp_name)
+        raise
+
+
 def atomic_write_json(path: str | Path, data: Any) -> None:
     """Écrit `data` en JSON dans un fichier temporaire du même dossier, puis `os.replace`.
 
